@@ -1,4 +1,5 @@
 let currentPlayerRotate = -1,
+    _curRoom,
     items_copy = [],
     room_copy = [],
     floors = 3;
@@ -74,6 +75,7 @@ function rotate_tiles( tiles, rot_func ) {
     // turn arrow tiles
     tiles.forEach( ( e ) => {
         imageStore.source[ `TIL_${e}` ].map( ( frame, i ) => {
+            console.log('rotate_tiles frame:',frame, 'rot_func:', rot_func);
             frame = rot_func( frame );
         } );
     } )
@@ -134,6 +136,21 @@ function custom_keys( e ) {
     let _player = player(),
         rot_func,
         _cur_room = parseInt( curRoom, 10 );
+
+    if ( _curRoom !== _cur_room ) {
+        // reset sprite rotations
+        [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n' ].map((id)=>{
+            let tile_id = `TIL_${id}`;
+
+            rotate.reset( tile_id );
+        });
+        
+        // store internal tracker
+        _curRoom = _cur_room;
+
+        // refesh levels
+        rotate_room( _curRoom, rotate._reset );
+    }
 
     switch ( e.key ) {
         // use this.floors !
@@ -239,6 +256,15 @@ function init() {
         rotate.init();
 
         room_copy = rotate.copy( room );
+        _curRoom = 0;
+
+        // draw on screen
+        let rot_func = rotate.copy;
+
+        rotate_room( 0, rot_func );
+        rotate_tiles( [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n' ], rot_func );
+        rotate_items_pos( rot_func );
+        rotate_player_pos( rot_func );
 
         clearInterval( init_interval );
         setInterval( key_check, 50 );

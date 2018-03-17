@@ -18,9 +18,12 @@ class rotate {
 
     /**
      * 
-     * @param {*} to_copy 
+     * @param string to_copy 
+     * @return
      */
     static get_cached( to_copy ) {
+        console.log( 'get_cached to_copy:', to_copy );
+
         return JSON.parse( JSON.stringify( cache[ to_copy ] ) );
     }
 
@@ -55,7 +58,7 @@ class rotate {
                 a[ j ][ n - i - 1 ] = tmp;
             }
         }
-        
+
         return a;
     }
 
@@ -129,6 +132,13 @@ class rotate {
         window.imageStore.source[ id ] = sprite_array;
 
         window.renderImages();
+    }
+
+    /**
+     * 
+     */
+    static _reset( a ) {
+        return a;
     }
 }
 
