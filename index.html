@@ -107,20 +107,20 @@ PAL 0
 
 ROOM 3
 0,i,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-e,f,g,0,0,0,0,0,0,0,0,0,0,0,0,0
-f,f,f,h,0,0,0,0,0,0,0,0,0,0,0,0
-m,f,j,0,0,0,0,0,0,0,0,0,0,0,0,0
-0,n,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,a,a,a,0,0,0,0
-0,0,0,0,0,0,0,0,a,0,0,0,a,0,0,0
-0,0,0,0,0,0,0,0,a,0,0,0,a,0,0,0
-0,0,0,0,0,0,0,0,a,0,0,0,a,0,0,0
-0,0,0,0,0,0,0,0,0,a,a,a,0,0,0,0
+e,f,g,0,0,0,0,0,0,0,0,0,0,i,0,0
+f,f,f,h,0,0,0,0,0,0,0,0,e,f,f,g
+m,f,j,0,0,0,0,0,0,0,e,f,f,f,f,f
+0,n,0,0,0,0,0,0,0,e,f,f,f,f,f,f
+0,0,0,0,0,0,0,0,e,a,a,a,f,f,f,j
+0,0,0,0,0,0,0,0,a,0,0,0,a,f,f,0
+0,0,0,0,0,0,0,0,a,0,0,0,a,f,j,0
+0,0,0,0,0,0,0,0,a,0,0,0,a,j,0,0
+0,0,0,0,0,0,0,0,0,a,a,a,j,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,a,0,0,a,0,0,a,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 PAL 1
 
@@ -139,7 +139,7 @@ ROOM 4
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,b,0,0,b,0,0,b,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 PAL 1
 
@@ -158,7 +158,7 @@ ROOM 5
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,c,0,0,c,0,0,c,0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 PAL 1
 
@@ -392,12 +392,6 @@ ITM 0
 00000000
 00000000
 NAME tea
-
-DLG SPR_0
-I'm a cat
-
-VAR a
-42
 
 </script>
 
@@ -5262,8 +5256,6 @@ function getOffset(evt) {
 }
 
 function stopGame() {
-	console.log("stop GAME!");
-
 	document.removeEventListener('keydown', onkeydown);
 	clearInterval(update_interval);
 }
@@ -5548,7 +5540,6 @@ function onkeydown(e) {
 		if (dialogBuffer.CanContinue()) {
 			var hasMoreDialog = dialogBuffer.Continue();
 			if(!hasMoreDialog) {
-				console.log("EXIT DIALOG --- onkeydown")
 				onExitDialog();
 			}
 		}
@@ -5584,9 +5575,6 @@ function onkeydown(e) {
 
 	if( keyDownList.indexOf( e.keyCode ) == -1 )
 		keyDownList.push( e.keyCode );
-
-	console.log("KEY DOWN " + keyDownList.length );
-	console.log(keyDownList);
 }
 
 function movePlayer(direction) {
@@ -5616,8 +5604,6 @@ function movePlayer(direction) {
 	// do items first, because you can pick up an item AND go through a door
 	if (itmIndex > -1) {
 		// TODO pick up items (what about touch?)
-		// console.log("HIT ITM ");
-		// console.log( itmIndex );
 		var itm = room[ player().room ].items[ itmIndex ];
 		// console.log(itm);
 		room[ player().room ].items.splice( itmIndex, 1 );
@@ -5630,8 +5616,6 @@ function movePlayer(direction) {
 			onInventoryChanged( itm.id );
 
 		startItemDialog( itm.id  /*itemId*/ );
-
-		// console.log( player().inventory );
 	}
 
 	if (end) {
@@ -5659,11 +5643,6 @@ function onkeyup(e) {
 	// todo is this robust enough?
 	if( keyDownList.length <= 0 )
 		curPlayerDirection = Direction.None;
-
-	console.log(e.keyCode);
-	console.log("KEY UP " + keyDownList.length );
-	console.log(keyDownList);
-	console.log("_____");
 }
 
 var touchInfo = {
@@ -5695,9 +5674,6 @@ function ontouchstart(e) {
 var swipeDistance = 30;
 function ontouchmove(e) {
 	e.preventDefault();
-
-	console.log("MOUSE MOVE");
-	console.log(touchInfo);
 
 	if( !dialogBuffer.IsActive() && touchInfo.isDown && e.changedTouches.length > 0 ) {
 		touchInfo.curX = e.changedTouches[0].clientX;
@@ -5732,9 +5708,6 @@ function ontouchmove(e) {
 
 function ontouchend(e) {
 	e.preventDefault();
-
-	console.log("MOUSE UP");
-	console.log(touchInfo);
 
 	touchInfo.isDown = false;
 
@@ -5883,8 +5856,6 @@ function parseWorld(file) {
 	var i = 0;
 	while (i < lines.length) {
 		var curLine = lines[i];
-
-		// console.log(lines[i]);
 
 		if (i == 0) {
 			i = parseTitle(lines, i);
@@ -6140,7 +6111,6 @@ function placeSprites() {
 		sprite[id].room = spriteStartLocations[id].room;
 		sprite[id].x = spriteStartLocations[id].x;
 		sprite[id].y = spriteStartLocations[id].y;
-		//console.log(sprite[id]);
 	}
 }
 
@@ -6586,8 +6556,6 @@ function renderImages() {
 
 function renderImageForAllPalettes(drawing) {
 	for (pal in palette) {
-		// console.log(pal);
-
 		var col = drawing.col;
 		var colStr = "" + col;
 
@@ -6781,7 +6749,7 @@ function getItemImage(itm,palId,frameIndex) { //aren't these all the same????
 			drwId += "_" + itm.animation.frameIndex;
 		}
 	}
-	
+
 	return imageStore.render[ palId ][ itm.col ][ drwId ];
 }
 

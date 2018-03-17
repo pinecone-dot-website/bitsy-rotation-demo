@@ -52,13 +52,15 @@ function rotate_room( room_id, rot_func ) {
 
         // copy floors to the base room
         room[ i ].tilemap.map( ( row, y ) => {
-            let _y = Math.max( 0, y - (i - room_id) );
-            
-            row.map( ( col, x ) => {
-                if ( col != "0" ) {
-                    room[ room_id ].tilemap[ _y ][ x ] = col;
-                }
-            } );
+            let _y = ( y - ( i - room_id ) );
+
+            if ( _y > -1 ) {
+                row.map( ( col, x ) => {
+                    if ( col != "0" ) {
+                        room[ room_id ].tilemap[ _y ][ x ] = col;
+                    }
+                } );
+            }
         } );
     }
 }
@@ -79,39 +81,50 @@ function rotate_tiles( tiles, rot_func ) {
     window.renderImages();
 }
 
-function rotate_player_pos( rot_func ){
+/**
+ * 
+ */
+function rotate_items_pos( rot_func ) {
+
+}
+
+/**
+ * 
+ * @param {*} rot_func 
+ */
+function rotate_player_pos( rot_func ) {
     let _player = player(),
         tmp_room = [
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-    ];
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+        ];
 
     tmp_room[ _player.y ][ _player.x ] = "p";
 
-    rot_func(tmp_room);
+    rot_func( tmp_room );
 
-    tmp_room.filter((col, y)=>{
-        let _col = col.filter((row,x)=>{
-            if( row == 'p' ){
+    tmp_room.filter( ( col, y ) => {
+        let _col = col.filter( ( row, x ) => {
+            if ( row == 'p' ) {
                 _player.x = x;
-                 _player.y =y;
+                _player.y = y;
             };
-        });
-    });
+        } );
+    } );
 }
 
 function custom_keys( e ) {
@@ -138,39 +151,11 @@ function custom_keys( e ) {
     }
 
     rotate_room( _cur_room, rot_func );
-    
+
     rotate_tiles( [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n' ], rot_func );
 
+    rotate_items_pos( rot_func );
     rotate_player_pos( rot_func );
-
-    /*
-    room[ _cur_room + 1 ].tilemap.map( ( row, y ) => {
-        let _y = Math.max( 0, y - 1 );
-
-        row.map( ( col, x ) => {
-            
-            if ( col == '-1' ) {
-                room_copy[ _cur_room + 1 ].tilemap[ y ][ x ] = "0";
-                //alert( 'player found!' );
-                _player.x = x;
-                _player.y = y;
-            } else
-             if ( col != "0" ) {
-                room[ _cur_room ].tilemap[ _y ][ x ] = col;
-            }
-        } );
-    } );
-
-    room[ _cur_room + 2 ].tilemap.map( ( row, y ) => {
-        let _y = Math.max( 0, y - 2 );
-
-        row.map( ( col, x ) => {
-            if ( col != "0" ) {
-                room[ _cur_room ].tilemap[ _y ][ x ] = col;
-            }
-        } );
-    } );
-    */
 
     // rotate items 
     let tmp_items = [
@@ -194,12 +179,12 @@ function custom_keys( e ) {
 
     // items_copy is going to store all items that are not collected, but may or may not be visible
     // get this once, before any rotations
-    if ( !items_copy.length ) {
-        items_copy = rotate.copy( room[ _cur_room ].items );
+    if ( !items_copy.hasOwnProperty( _cur_room ) ) {
+        items_copy[ _cur_room ] = rotate.copy( room[ _cur_room ].items );
     }
 
     // next track items we picked up
-    items_copy.map( ( item ) => {
+    items_copy[ _cur_room ].map( ( item ) => {
         if ( room[ _cur_room ].items.filter( in_room => {
                 return ( item.x == in_room.x ) && ( item.y == in_room.y );
             } ) ) {
@@ -236,10 +221,9 @@ function custom_keys( e ) {
         } );
     } );
 
-
     // flatten array
     tmp_items = [].concat.apply( [], tmp_items );
-    items_copy = tmp_items;
+    items_copy[ _cur_room ] = tmp_items;
 
     // show these only
     tmp_items = tmp_items.filter( item => {
