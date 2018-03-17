@@ -1,20 +1,13 @@
-let currentPlayerRotate = -1;
-let sprite_copy;
+let currentPlayerRotate = -1,
+    room_copy = [];
 
-//const rotate = require('../../../../tools/hacker/es6/rotate.js');
 const rotate = require( './rotate.js' );
 
 /**
  * 
  */
 function key_check() {
-
-    // walkingPath
-    // curRoom
-
     if ( ( window.curPlayerDirection != -1 ) && ( currentPlayerRotate != window.curPlayerDirection ) ) {
-        console.log( 'window.curPlayerDirection', window.curPlayerDirection );
-
         currentPlayerRotate = window.curPlayerDirection;
 
         switch ( window.curPlayerDirection ) {
@@ -35,7 +28,6 @@ function key_check() {
                 rotate.flip_h( 'SPR_A' );
                 rotate.flip_h( 'TIL_a' );
 
-                //rotate._rotateCCW( room[ 0 ].tilemap );
                 break;
 
                 //right
@@ -43,22 +35,68 @@ function key_check() {
                 rotate.reset( 'SPR_A' );
                 rotate.reset( 'TIL_a' );
 
-                //rotate._rotateCW( room[ 0 ].tilemap );
                 break;
         }
-
-        renderImages();
     }
 }
 
-function copy( to_copy ) {
-    return JSON.parse( JSON.stringify( to_copy ) );
+function overlay() {
+
 }
+
+function custom_keys( e ) {
+    console.log( ' custom_keys keyDownList', keyDownList );
+
+    // rotate player on grid
+    let _player = player();
+
+    switch ( e.key ) {
+        case "e":
+            room_copy[ 1 ].tilemap[ _player.y ][ _player.x ] = "-1";
+
+            rotate._cw( room_copy[ 0 ].tilemap );
+            rotate._cw( room_copy[ 1 ].tilemap );
+            break;
+
+        case "q":
+            room_copy[ 1 ].tilemap[ _player.y ][ _player.x ] = "-1";
+
+            rotate._ccw( room_copy[ 0 ].tilemap );
+            rotate._ccw( room_copy[ 1 ].tilemap );
+            break;
+
+        default:
+            return;
+            break;
+    }
+
+    // pause bitsy updater
+    //clearInterval( window.update_interval );
+
+    room[ 0 ].tilemap = rotate.copy( room_copy[ 0 ].tilemap );
+    room[ 1 ].tilemap = rotate.copy( room_copy[ 1 ].tilemap );
+
+    room[ 1 ].tilemap.map( ( row, y ) => {
+        row.map( ( col, x ) => {
+            if ( col == '-1' ) {
+                room_copy[ 1 ].tilemap[ y ][ x ] = "0";
+
+                _player.x = x;
+                _player.y = y;
+            } else if( col == 'c' ){
+                room[ 0 ].tilemap[ y - 1 ][ x ] = (room[ 0 ].tilemap[ y ][ x ] == "b") ? "d" : "c";
+            }
+        } );
+    } );
+}
+window.addEventListener( 'keydown', custom_keys );
 
 function init() {
     if ( imageStore.source.SPR_A ) {
-        rotate.cache = copy( imageStore.source );
-        
+        rotate.init();
+
+        room_copy = rotate.copy( room );
+
         clearInterval( init_interval );
         setInterval( key_check, 50 );
     }
