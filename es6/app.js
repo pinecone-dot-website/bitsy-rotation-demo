@@ -96,9 +96,9 @@ function rotate_items_pos( _cur_room, rot_func ) {
 
     // items_copy is going to store all items that are not collected, but may or may not be visible
     // get this once, before any rotations
-    if ( !items_copy.hasOwnProperty( _cur_room ) ) {
+    //if ( !items_copy.hasOwnProperty( _cur_room ) ) {
         items_copy[ _cur_room ] = rotate.copy( room[ _cur_room ].items );
-    }
+    //}
 
     // next track items we picked up
     items_copy[ _cur_room ].map( ( item ) => {
