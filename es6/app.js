@@ -4,7 +4,10 @@ let currentPlayerRotate = -1,
     room_copy = [],
     floors = 3;
 
-const rotate = require( './rotate.js' );
+const rotate = require( './rotate.js' ),
+    shadow_tiles_floor = [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n', 'o', 'p', 'r', 's' ],
+    shadow_tiles_walls = [ 'q', 't', 'u' ];
+
 window.rotate = rotate;
 
 /**
@@ -75,7 +78,7 @@ function rotate_tiles( tiles, rot_func ) {
     // turn arrow tiles
     tiles.forEach( ( e ) => {
         imageStore.source[ `TIL_${e}` ].map( ( frame, i ) => {
-            console.log('rotate_tiles frame:',frame, 'rot_func:', rot_func);
+            console.log( 'rotate_tiles frame:', frame, 'rot_func:', rot_func );
             frame = rot_func( frame );
         } );
     } )
@@ -86,94 +89,7 @@ function rotate_tiles( tiles, rot_func ) {
 /**
  * 
  */
-function rotate_items_pos( rot_func ) {
-
-}
-
-/**
- * 
- * @param {*} rot_func 
- */
-function rotate_player_pos( rot_func ) {
-    let _player = player(),
-        tmp_room = [
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-        ];
-
-    tmp_room[ _player.y ][ _player.x ] = "p";
-
-    rot_func( tmp_room );
-
-    tmp_room.filter( ( col, y ) => {
-        let _col = col.filter( ( row, x ) => {
-            if ( row == 'p' ) {
-                _player.x = x;
-                _player.y = y;
-            };
-        } );
-    } );
-}
-
-function custom_keys( e ) {
-    //console.log( ' custom_keys keyDownList', keyDownList );
-
-    // rotate player on grid
-    let _player = player(),
-        rot_func,
-        _cur_room = parseInt( curRoom, 10 );
-
-    if ( _curRoom !== _cur_room ) {
-        // reset sprite rotations
-        [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n' ].map((id)=>{
-            let tile_id = `TIL_${id}`;
-
-            rotate.reset( tile_id );
-        });
-        
-        // store internal tracker
-        _curRoom = _cur_room;
-
-        // refesh levels
-        rotate_room( _curRoom, rotate._reset );
-    }
-
-    switch ( e.key ) {
-        // use this.floors !
-        case "e":
-            rot_func = rotate._cw;
-            break;
-
-        case "q":
-            rot_func = rotate._ccw;
-            break;
-
-        default:
-            return;
-            break;
-    }
-
-    rotate_room( _cur_room, rot_func );
-
-    rotate_tiles( [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n' ], rot_func );
-
-    rotate_items_pos( rot_func );
-    rotate_player_pos( rot_func );
-
+function rotate_items_pos( _cur_room, rot_func ) {
     // rotate items 
     let tmp_items = [
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
@@ -249,6 +165,91 @@ function custom_keys( e ) {
 
     room[ _cur_room ].items = tmp_items;
 }
+
+/**
+ * 
+ * @param {*} rot_func 
+ */
+function rotate_player_pos( rot_func ) {
+    let _player = player(),
+        tmp_room = [
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+        ];
+
+    tmp_room[ _player.y ][ _player.x ] = "PLAYER";
+
+    rot_func( tmp_room );
+
+    tmp_room.filter( ( col, y ) => {
+        let _col = col.filter( ( row, x ) => {
+            if ( row == 'PLAYER' ) {
+                _player.x = x;
+                _player.y = y;
+            };
+        } );
+    } );
+}
+
+function custom_keys( e ) {
+    //console.log( ' custom_keys keyDownList', keyDownList );
+
+    // rotate player on grid
+    let _player = player(),
+        rot_func,
+        _cur_room = parseInt( curRoom, 10 );
+
+    if ( _curRoom !== _cur_room ) {
+        // reset sprite rotations
+        shadow_tiles_floor.map( ( id ) => {
+            let tile_id = `TIL_${id}`;
+
+            rotate.reset( tile_id );
+        } );
+
+        // store internal tracker
+        _curRoom = _cur_room;
+
+        // refesh levels
+        rotate_room( _curRoom, rotate._reset );
+    }
+
+    switch ( e.key ) {
+        // use this.floors !
+        case "e":
+            rot_func = rotate._cw;
+            break;
+
+        case "q":
+            rot_func = rotate._ccw;
+            break;
+
+        default:
+            return;
+            break;
+    }
+
+    rotate_room( _cur_room, rot_func );
+
+    rotate_tiles( shadow_tiles_floor, rot_func );
+
+    rotate_items_pos( _cur_room, rot_func );
+    rotate_player_pos( rot_func );
+}
 window.addEventListener( 'keydown', custom_keys );
 
 function init() {
@@ -262,8 +263,8 @@ function init() {
         let rot_func = rotate.copy;
 
         rotate_room( 0, rot_func );
-        rotate_tiles( [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n' ], rot_func );
-        rotate_items_pos( rot_func );
+        rotate_tiles( shadow_tiles_floor, rot_func );
+        rotate_items_pos( 0, rot_func );
         rotate_player_pos( rot_func );
 
         clearInterval( init_interval );
