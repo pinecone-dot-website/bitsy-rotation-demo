@@ -252,9 +252,7 @@ function custom_keys( e ) {
 
     console.log( 'room_rotate', room_rotate );
 
-    if ( ( room_rotate % 180 ) ) {
-        //rotate_tiles( shadow_tiles_walls, rotate.flip_h ); // flip v!
-    }
+    //rotate_tiles( shadow_tiles_walls, flip v? );
 
     rotate_items_pos( _cur_room, rot_func );
     rotate_player_pos( rot_func );
@@ -270,6 +268,15 @@ function init() {
 
         // draw on screen
         let rot_func = rotate.copy;
+
+        // dbugging
+        window.flip_shadows_h = function() {
+            rotate_tiles( shadow_tiles_walls, rotate._flip_h );
+        }
+
+        window.flip_shadows_v = function() {
+            rotate_tiles( shadow_tiles_walls, rotate._flip_v );
+        }
 
         rotate_room( 0, rot_func );
         rotate_tiles( shadow_tiles_floor, rot_func );

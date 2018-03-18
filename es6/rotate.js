@@ -121,6 +121,30 @@ class rotate {
             x.reverse();
         } );
     }
+    
+    /**
+     * 
+     * @param string id 
+     */
+    static flip_v( id ) {
+        let sprite_array = this.get_cached( id );
+
+        sprite_array.map( ( frame, i ) => {
+            frame = this._flip_v( frame );
+        } );
+
+        window.imageStore.source[ id ] = sprite_array;
+
+        window.renderImages();
+    }
+
+    /**
+     * 
+     * @param array a 
+     */
+    static _flip_v( a ) {
+        a.reverse();
+    }
 
     /**
      * 
