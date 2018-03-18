@@ -1,6 +1,6 @@
 let currentPlayerRotate = -1,
     _curRoom,
-    items_copy = [],
+    items_copy = [], // keyed by room id, 16x grid
     room_copy = [],
     floors = 3,
     room_rotate = 0; // 360 degrees!
@@ -92,24 +92,7 @@ function rotate_tiles( tiles, rot_func ) {
  */
 function rotate_items_pos( _cur_room, rot_func ) {
     // rotate items 
-    let tmp_items = [
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-    ];
+    let tmp_items = rotate.empty_grid_16();
 
     // items_copy is going to store all items that are not collected, but may or may not be visible
     // get this once, before any rotations
@@ -134,7 +117,7 @@ function rotate_items_pos( _cur_room, rot_func ) {
     tmp_items = tmp_items.map( ( row, y ) => {
         let row_items = row.map( ( item, x ) => {
             if ( item.id ) {
-                let _on = room[ _cur_room ].tilemap[ y ][ x ] == "0" || shadow_tiles_floor.includes(room[ _cur_room ].tilemap[ y ][ x ] );
+                let _on = room[ _cur_room ].tilemap[ y ][ x ] == "0" || shadow_tiles_floor.includes( room[ _cur_room ].tilemap[ y ][ x ] );
 
                 return {
                     id: item.id,
