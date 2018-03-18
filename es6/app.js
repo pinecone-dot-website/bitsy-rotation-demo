@@ -134,7 +134,7 @@ function rotate_items_pos( _cur_room, rot_func ) {
     tmp_items = tmp_items.map( ( row, y ) => {
         let row_items = row.map( ( item, x ) => {
             if ( item.id ) {
-                let _on = room[ _cur_room ].tilemap[ y ][ x ] == "0";
+                let _on = room[ _cur_room ].tilemap[ y ][ x ] == "0" || shadow_tiles_floor.includes(room[ _cur_room ].tilemap[ y ][ x ] );
 
                 return {
                     id: item.id,
@@ -192,7 +192,7 @@ function rotate_player_pos( rot_func ) {
             [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
         ];
 
-    tmp_room[ _player.y ][ _player.x ] = "PLAYER";
+    tmp_room[ _player.y ][ _player.x ] = 'PLAYER';
 
     rot_func( tmp_room );
 
