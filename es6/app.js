@@ -1,5 +1,6 @@
 let currentPlayerRotate = -1,
     _curRoom,
+    exits_copy = [], // keyed by room id, 16x grid
     items_copy = [], // keyed by room id, 16x grid
     room_copy = [],
     floors = 3,
@@ -88,23 +89,93 @@ function rotate_tiles( tiles, rot_func ) {
 }
 
 /**
+ * @todo consolidate duplicate logic with rotate_items_pos, implement rotate endings
+ * @param {*} _cur_room 
+ * @param {*} rot_func 
+ */
+function rotate_exits_pos( _cur_room, rot_func ) {
+    // empty 16x grid
+    let tmp_exits = rotate.empty_grid_16();
+
+    // get this once, before any rotations
+    exits_copy[ _cur_room ] = rotate.copy( room[ _cur_room ].exits );
+
+    // next track items we picked up
+    exits_copy[ _cur_room ].map( ( exit ) => {
+        /*let _filtered = room[ _cur_room ].exits.filter( in_room => {
+            return ( item.x == in_room.x ) && ( item.y == in_room.y );
+        } );
+
+        if ( _filtered ) {*/
+        tmp_exits[ exit.y ][ exit.x ] = {
+            dest: exit.dest,
+            // x: exit.x,
+            // y: exit.y
+        };
+
+        /*}*/
+    } );
+
+    rot_func( tmp_exits );
+
+    tmp_exits = tmp_exits.map( ( row, y ) => {
+        let row_items = row.map( ( exit, x ) => {
+            if ( exit.dest ) {
+                //
+                let _on = true; //room[ _cur_room ].tilemap[ y ][ x ] == "l" || shadow_tiles_floor.includes( room[ _cur_room ].tilemap[ y ][ x ] );
+
+                return {
+                    dest: exit.dest,
+                    x: x,
+                    y: y,
+                    _on: _on
+                };
+            }
+        } );
+
+        return row_items;
+    } );
+
+     // remove empty ones
+     tmp_exits = tmp_exits.map( row => {
+        return row.filter( item => {
+            return item !== undefined;
+        } );
+    } );
+
+    // flatten array
+    tmp_exits = [].concat.apply( [], tmp_exits );
+    exits_copy[ _cur_room ] = tmp_exits;
+
+    // show these only
+    tmp_exits = tmp_exits.filter( item => {
+        return item._on;
+    } );
+
+    room[ _cur_room ].exits = tmp_exits;
+}
+
+/**
  * 
+ * @param int
+ * @param callable
+ * @return
  */
 function rotate_items_pos( _cur_room, rot_func ) {
-    // rotate items 
+    // empty 16x grid
     let tmp_items = rotate.empty_grid_16();
 
     // items_copy is going to store all items that are not collected, but may or may not be visible
     // get this once, before any rotations
-    //if ( !items_copy.hasOwnProperty( _cur_room ) ) {
-        items_copy[ _cur_room ] = rotate.copy( room[ _cur_room ].items );
-    //}
+    items_copy[ _cur_room ] = rotate.copy( room[ _cur_room ].items );
 
     // next track items we picked up
     items_copy[ _cur_room ].map( ( item ) => {
-        if ( room[ _cur_room ].items.filter( in_room => {
-                return ( item.x == in_room.x ) && ( item.y == in_room.y );
-            } ) ) {
+        let _filtered = room[ _cur_room ].items.filter( in_room => {
+            return ( item.x == in_room.x ) && ( item.y == in_room.y );
+        } );
+
+        if ( _filtered ) {
             tmp_items[ item.y ][ item.x ] = {
                 id: item.id
             };
@@ -210,6 +281,7 @@ function custom_keys( e ) {
 
         // refesh levels
         rotate_room( _curRoom, rotate._reset );
+        rotate_items_pos( _curRoom, rotate._reset );
     }
 
     switch ( e.key ) {
@@ -238,6 +310,8 @@ function custom_keys( e ) {
     //rotate_tiles( shadow_tiles_walls, flip v? );
 
     rotate_items_pos( _cur_room, rot_func );
+    rotate_exits_pos( _cur_room, rot_func );
+
     rotate_player_pos( rot_func );
 }
 window.addEventListener( 'keydown', custom_keys );
