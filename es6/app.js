@@ -2,7 +2,8 @@ let currentPlayerRotate = -1,
     _curRoom,
     items_copy = [],
     room_copy = [],
-    floors = 3;
+    floors = 3,
+    room_rotate = 0; // 360 degrees!
 
 const rotate = require( './rotate.js' ),
     shadow_tiles_floor = [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n', 'o', 'p', 'r', 's' ],
@@ -232,10 +233,12 @@ function custom_keys( e ) {
         // use this.floors !
         case "e":
             rot_func = rotate._cw;
+            room_rotate = ( room_rotate + 90 ) % 360;
             break;
 
         case "q":
             rot_func = rotate._ccw;
+            room_rotate = ( room_rotate + 270 ) % 360;
             break;
 
         default:
@@ -246,6 +249,12 @@ function custom_keys( e ) {
     rotate_room( _cur_room, rot_func );
 
     rotate_tiles( shadow_tiles_floor, rot_func );
+
+    console.log( 'room_rotate', room_rotate );
+
+    if ( ( room_rotate % 180 ) ) {
+        //rotate_tiles( shadow_tiles_walls, rotate.flip_h ); // flip v!
+    }
 
     rotate_items_pos( _cur_room, rot_func );
     rotate_player_pos( rot_func );
