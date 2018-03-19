@@ -41,7 +41,7 @@ class rotate {
      * @return
      */
     static get_cached( to_copy ) {
-        console.log( 'get_cached to_copy:', to_copy );
+        //console.log( 'get_cached to_copy:', to_copy );
 
         return JSON.parse( JSON.stringify( cache[ to_copy ] ) );
     }

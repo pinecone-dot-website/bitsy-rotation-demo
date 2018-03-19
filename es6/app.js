@@ -3,6 +3,7 @@ let currentPlayerRotate = -1,
     exits_copy = [], // keyed by room id, 16x grid
     items_copy = [], // keyed by room id, 16x grid
     room_copy = [],
+    room_init = [], // keyed by room id, original contents of room, never to be rotated
     floors = 3,
     room_rotate = 0; // 360 degrees!
 
@@ -10,6 +11,9 @@ const rotate = require( './rotate.js' ),
     shadow_tiles_floor = [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n', 'o', 'p', 'r', 's' ],
     shadow_tiles_walls = [ 'q', 't', 'u' ];
 
+// debugging
+window.items_copy = items_copy;
+window.room_init = room_init;
 window.rotate = rotate;
 
 /**
@@ -55,7 +59,17 @@ function rotate_room( room_id, rot_func ) {
         // rotate the matrix
         rot_func( room_copy[ i ].tilemap );
         room[ i ].tilemap = rotate.copy( room_copy[ i ].tilemap );
+    }
 
+    refresh_room( room_id );
+}
+
+/**
+ * copy the floors from the nex x levels to build 3d
+ * @param int room_id 
+ */
+function refresh_room( room_id ){
+    for ( let i = room_id; i < room_id + floors; i++ ) {
         // copy floors to the base room
         room[ i ].tilemap.map( ( row, y ) => {
             let _y = ( y - ( i - room_id ) );
@@ -70,6 +84,7 @@ function rotate_room( room_id, rot_func ) {
         } );
     }
 }
+window.refresh_room = refresh_room;
 
 /**
  * 
@@ -80,7 +95,6 @@ function rotate_tiles( tiles, rot_func ) {
     // turn arrow tiles
     tiles.forEach( ( e ) => {
         imageStore.source[ `TIL_${e}` ].map( ( frame, i ) => {
-            console.log( 'rotate_tiles frame:', frame, 'rot_func:', rot_func );
             frame = rot_func( frame );
         } );
     } )
@@ -102,18 +116,9 @@ function rotate_exits_pos( _cur_room, rot_func ) {
 
     // next track items we picked up
     exits_copy[ _cur_room ].map( ( exit ) => {
-        /*let _filtered = room[ _cur_room ].exits.filter( in_room => {
-            return ( item.x == in_room.x ) && ( item.y == in_room.y );
-        } );
-
-        if ( _filtered ) {*/
         tmp_exits[ exit.y ][ exit.x ] = {
-            dest: exit.dest,
-            // x: exit.x,
-            // y: exit.y
+            dest: exit.dest
         };
-
-        /*}*/
     } );
 
     rot_func( tmp_exits );
@@ -136,8 +141,8 @@ function rotate_exits_pos( _cur_room, rot_func ) {
         return row_items;
     } );
 
-     // remove empty ones
-     tmp_exits = tmp_exits.map( row => {
+    // remove empty ones
+    tmp_exits = tmp_exits.map( row => {
         return row.filter( item => {
             return item !== undefined;
         } );
@@ -167,23 +172,36 @@ function rotate_items_pos( _cur_room, rot_func ) {
 
     // items_copy is going to store all items that are not collected, but may or may not be visible
     // get this once, before any rotations
-    items_copy[ _cur_room ] = rotate.copy( room[ _cur_room ].items );
-
-    // next track items we picked up
-    items_copy[ _cur_room ].map( ( item ) => {
-        let _filtered = room[ _cur_room ].items.filter( in_room => {
-            return ( item.x == in_room.x ) && ( item.y == in_room.y );
+    if ( !items_copy.hasOwnProperty( _cur_room ) ) {
+        items_copy[ _cur_room ] = rotate.copy( room[ _cur_room ].items );
+    }
+    
+    // the items that have been picked up since last rotation.
+    // needs to account for hidden items
+    let picked_up = items_copy[ _cur_room ].filter( item => {
+        let found = room[ _cur_room ].items.find( ( element ) => {
+            return !item._on || ( element.x == item.x ) && ( element.y == item.y );
         } );
 
-        if ( _filtered ) {
+        return !found;
+    } );
+
+    items_copy[ _cur_room ].map( ( item ) => {
+        let is_in_picked_up = picked_up.find( ( element ) => {
+            return ( element.x == item.x ) && ( element.y == item.y );
+        } );
+
+        if ( !is_in_picked_up ) {
             tmp_items[ item.y ][ item.x ] = {
                 id: item.id
             };
+        } else {
+            //alert('its gone!');
         }
     } );
-
+    
     rot_func( tmp_items );
-
+   
     //
     tmp_items = tmp_items.map( ( row, y ) => {
         let row_items = row.map( ( item, x ) => {
@@ -201,14 +219,14 @@ function rotate_items_pos( _cur_room, rot_func ) {
 
         return row_items;
     } );
-
+    
     // remove empty ones
     tmp_items = tmp_items.map( row => {
         return row.filter( item => {
             return item !== undefined;
         } );
     } );
-
+    
     // flatten array
     tmp_items = [].concat.apply( [], tmp_items );
     items_copy[ _cur_room ] = tmp_items;
@@ -261,14 +279,17 @@ function rotate_player_pos( rot_func ) {
 }
 
 function custom_keys( e ) {
-    //console.log( ' custom_keys keyDownList', keyDownList );
-
     // rotate player on grid
     let _player = player(),
         rot_func,
         _cur_room = parseInt( curRoom, 10 );
 
     if ( _curRoom !== _cur_room ) {
+        for ( let i = _cur_room; i < _cur_room + floors; i++ ) {
+            room[ i ] = rotate.copy( room_init[ i ] );
+            room_copy[ i ] = rotate.copy( room_init[ i ] );
+        }
+
         // reset sprite rotations
         shadow_tiles_floor.map( ( id ) => {
             let tile_id = `TIL_${id}`;
@@ -279,8 +300,11 @@ function custom_keys( e ) {
         // store internal tracker
         _curRoom = _cur_room;
 
-        // refesh levels
-        rotate_room( _curRoom, rotate._reset );
+        // refesh levels, to build dimensions, place items / sprites behind 
+        room_rotate = 0;
+        refresh_room( _curRoom );
+
+        //console.log('room 0 items', room[0].items); alert();
         rotate_items_pos( _curRoom, rotate._reset );
     }
 
@@ -304,9 +328,6 @@ function custom_keys( e ) {
     rotate_room( _cur_room, rot_func );
 
     rotate_tiles( shadow_tiles_floor, rot_func );
-
-    console.log( 'room_rotate', room_rotate );
-
     //rotate_tiles( shadow_tiles_walls, flip v? );
 
     rotate_items_pos( _cur_room, rot_func );
@@ -335,7 +356,11 @@ function init() {
             rotate_tiles( shadow_tiles_walls, rotate._flip_v );
         }
 
-        rotate_room( 0, rot_func );
+        Object.entries( room ).forEach( ( [ key, value ] ) => {
+            room_init[ key ] = rotate.copy( room[ key ] );
+        } );
+
+        refresh_room( 0 );
         rotate_tiles( shadow_tiles_floor, rot_func );
         rotate_items_pos( 0, rot_func );
         rotate_player_pos( rot_func );
