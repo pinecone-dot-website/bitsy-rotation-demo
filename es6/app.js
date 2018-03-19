@@ -8,7 +8,7 @@ let currentPlayerRotate = -1,
     room_rotate = 0; // 360 degrees!
 
 const rotate = require( './rotate.js' ),
-    shadow_tiles_floor = [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n', 'o', 'p', 'r', 's' ],
+    shadow_tiles_floor = [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n', 'o', 'p', 'r', 's', 'w' ],
     shadow_tiles_walls = [ 'q', 't', 'u' ];
 
 // debugging
