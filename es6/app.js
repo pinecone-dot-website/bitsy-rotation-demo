@@ -4,12 +4,14 @@ let currentPlayerRotate = -1,
     items_copy = [], // keyed by room id, 16x grid
     room_copy = [],
     room_init = [], // keyed by room id, original contents of room, never to be rotated
-    floors = 3,
+    floors = 1,
     room_rotate = 0; // 360 degrees!
 
 const rotate = require( './rotate.js' ),
-    shadow_tiles_floor = [ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n', 'o', 'p', 'r', 's', 'w' ],
-    shadow_tiles_walls = [ 'q', 't', 'u' ];
+    shadow_tiles_floor = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p']; //[ 'e', 'f', 'g', 'h', 'i', 'j', 'm', 'n', 'o', 'p', 'r', 's', 'w', 'y','z', 'aa' ],
+
+    // not working
+    shadow_tiles_walls = []; // [ 'q', 't', 'u' ];
 
 // debugging
 window.items_copy = items_copy;
@@ -26,12 +28,12 @@ function key_check() {
         switch ( window.curPlayerDirection ) {
             // up
             case 0:
-                rotate.ccw( 'SPR_A' );
+                //rotate.ccw( 'SPR_A' );
                 break;
 
                 //down
             case 1:
-                rotate.cw( 'SPR_A' );
+                //rotate.cw( 'SPR_A' );
                 break
 
                 //left
@@ -281,7 +283,7 @@ function rotate_player_pos( rot_func ) {
 function custom_keys( e ) {
     // rotate player on grid
     let _player = player(),
-        rot_func,
+        rot_func, rot_opp,
         _cur_room = parseInt( curRoom, 10 );
 
     if ( _curRoom !== _cur_room ) {
@@ -326,14 +328,19 @@ function custom_keys( e ) {
     }
 
     rotate_room( _cur_room, rot_func );
+    rotate_room( _cur_room, rot_func );
 
     rotate_tiles( shadow_tiles_floor, rot_func );
-    //rotate_tiles( shadow_tiles_walls, flip v? );
+
+    
+
+   // rotate_tiles( shadow_tiles_walls, rotate.reset );
 
     rotate_items_pos( _cur_room, rot_func );
     rotate_exits_pos( _cur_room, rot_func );
 
     rotate_player_pos( rot_func );
+
 }
 window.addEventListener( 'keydown', custom_keys );
 
