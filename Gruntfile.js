@@ -27,10 +27,21 @@ module.exports = function (grunt) {
             }
         },
 
+        processhtml: {
+            build: {
+                files: {
+                    'app.html': ['index.html']
+                }
+            },
+            options: {
+
+            }
+        },
+
         watch: {
             scripts: {
-                files: ['es6/**/*.js'],
-                tasks: ['browserify']
+                files: ['es6/**/*.js', 'index.html'],
+                tasks: ['browserify', 'processhtml']
             },
         },
 
@@ -48,10 +59,11 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-processhtml');
     grunt.loadNpmTasks('grunt-zip');
 
     grunt.registerTask('default', [
-        'browserify'
+        'browserify', 'processhtml'
     ]);
 };
 
